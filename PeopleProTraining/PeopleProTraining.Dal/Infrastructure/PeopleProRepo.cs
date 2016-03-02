@@ -208,6 +208,21 @@ namespace PeopleProTraining.Dal.Infrastructure
             p_context.Employees.Remove(employee);
             p_context.SaveChanges();
         }
+
+        public bool DeleteDepartment(Department department)
+        {
+            if(department.StaffCount > 0)
+            {
+                return false;
+            }
+
+            else
+            {
+                p_context.Departments.Remove(department);
+                p_context.SaveChanges();
+                return true;
+            }
+        }
         #endregion
 
     }

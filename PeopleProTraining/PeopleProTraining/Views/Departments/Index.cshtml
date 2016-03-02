@@ -17,15 +17,20 @@
             type: 'post',
             data: data,
             success: function (result) {
-                $("#department_Table").append(result);
-                $("#department_DepartmentName").val("");
+                if ($(result).filter("#NameError").length) {
+                    $("#DepartmentError").append(result);
+                }
+
+                else {
+                    $("#department_Table").append(result);
+                    $("#department_DepartmentName").val("");
+                }
             },
             failure: function (request, status, error) {
                 console.log(status);
                 console.log(error);
             },
             error: function (request, status, error) {
-                $("#DepartmentError").html(error);
                 console.log(status);
                 console.log(error);
             }

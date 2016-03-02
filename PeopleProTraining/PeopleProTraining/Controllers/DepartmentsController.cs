@@ -13,12 +13,12 @@ namespace PeopleProTraining.Controllers
 {
     public class DepartmentsController : Controller
     {
-        private PeopleProContext p_context = new PeopleProContext();
+        private PeopleProRepo p_repo = new PeopleProRepo();
 
         // GET: Departments
         public ActionResult Index()
         {
-            return View(p_context.Departments.ToList());
+            return View(p_repo.GetDepartments().ToList());
         }
 
         // GET: Departments/Details/5
@@ -28,7 +28,7 @@ namespace PeopleProTraining.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Department department = p_context.Departments.Find(id.Value);
+            Department department = p_repo.GetDepartment(id.Value);
             if (department == null)
             {
                 return HttpNotFound();
@@ -51,8 +51,7 @@ namespace PeopleProTraining.Controllers
         {
             if (ModelState.IsValid)
             {
-                p_context.Departments.Add(department);
-                p_context.SaveChanges();
+                p_repo.SaveDepartment(department);
                 return RedirectToAction("Index");
             }
 
@@ -66,7 +65,7 @@ namespace PeopleProTraining.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Department department = p_context.Departments.Find(id);
+            Department department = p_repo.GetDepartment(id.Value);
             if (department == null)
             {
                 return HttpNotFound();
@@ -83,20 +82,47 @@ namespace PeopleProTraining.Controllers
         {
             if (ModelState.IsValid)
             {
-                p_context.Entry(department).State = EntityState.Modified;
+                p_repo.SaveDepartment(department);
                 department.StaffCount = 0;
-                p_context.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(department);
         }
 
+        //GET: Department
+        public ActionResult Delete(int? id)
+        {
+            if(!id.HasValue)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
+            Department department = p_repo.GetDepartment(id.Value);
+
+
+            return View(department);
+        }
+
+        //POST: Department/Delete
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmation(int id)
+        {
+            //deletes if no employees are related
+            if (!p_repo.DeleteDepartment(p_repo.GetDepartment(id)))
+            {
+                //if employees, reassign employees
+
+            }
+
+            return RedirectToAction("Index");
+        }
+        
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                p_context.Dispose();
+                p_repo.Dispose(null);
             }
             base.Dispose(disposing);
         }
@@ -111,17 +137,13 @@ namespace PeopleProTraining.Controllers
 
             if (!ModelState.IsValid)
             {
-                var c = ModelState.Values.Where(x => x.Errors.Count >= 1).ToList();
-                //locate where the errors arise on the page
-                //set error partial
-                //load partials to error locations
+                return PartialView("_ErrorMessage", department);
             }
 
             else
             {
-                    p_context.Departments.Add(department);
-                    department.StaffCount = 0;
-                    p_context.SaveChanges();
+                p_repo.SaveDepartment(department);
+                department.StaffCount = 0;
             }
             return PartialView("_DepartmentRow", department);
         }

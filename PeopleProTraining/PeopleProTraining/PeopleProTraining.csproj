@@ -198,6 +198,7 @@
     <Content Include="Views\Employees\EditorTemplates\Employee.cshtml" />
     <Content Include="Views\Employees\EditorTemplates\DepartmentDepartmentId.cshtml" />
     <Content Include="Views\Departments\_DepartmentRow.cshtml" />
+    <Content Include="Views\Departments\_ErrorMessage.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
